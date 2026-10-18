@@ -1,0 +1,10 @@
+RSNN v2 Evaluation Summary — 20261018_213642
+Seeds: [43, 44, 45, 46, 47]
+Episodes per seed: 100
+Frame skip: 4
+======================================================================
+  random              : kill_rate=  0.0% mean_reward= -300.00 std=  0.00 (N=500)
+  always_shoot        : kill_rate= 67.4% mean_reward=  -76.09 std=235.13 (N=500)
+  always_left_shoot   : kill_rate= 70.4% mean_reward=  -60.67 std=227.65 (N=500)
+  rsnn_v1             : kill_rate= 67.2% mean_reward=  -39.23 std=189.19 (N=500)
+  rsnn_v2             : kill_rate= 71.6% mean_reward=  -55.40 std=221.97 (N=500)

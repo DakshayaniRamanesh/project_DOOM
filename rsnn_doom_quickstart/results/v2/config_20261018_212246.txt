@@ -1,0 +1,17 @@
+RSNN v2 Training Configuration
+========================================
+episodes:      500
+seed:          42
+lr:            0.0003
+gamma:         0.99
+gae_lambda:    0.95
+value_coef:    0.5
+entropy_coef:  0.01
+max_grad_norm: 0.5
+hidden:        96
+beta:          0.5
+timesteps:     8
+frame_skip:    4
+max_decisions: 0
+config:        None
+timestamp:     20261018_212246
