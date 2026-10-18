@@ -1,0 +1,26 @@
+RSNN v2 corrected A2C + GAE
+training_seed=42
+validation_seeds=[1101, 1102]
+val_episodes=2
+validate_every=5
+episodes_this_call=10
+resume=None
+rollout_steps=8
+lr=0.0003
+gamma=0.99
+gae_lambda=0.95
+value_coef=0.5
+entropy_coef=0.01
+max_grad_norm=0.5
+reward_scale=0.01
+critic_loss_type=huber
+diagnose_grads=True
+normalize_advantages=False
+hidden=96
+beta=0.5
+timesteps=8
+frame_skip=4
+max_decisions=0
+config=..\ViZDoom\scenarios\basic.cfg
+engine_timeout_with_no_next_observation=zero bootstrap (finite episode horizon)
+grad_norm_preclip=norm before clipping

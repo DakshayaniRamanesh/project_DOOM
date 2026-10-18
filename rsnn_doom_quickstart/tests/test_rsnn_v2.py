@@ -269,7 +269,8 @@ def _make_transitions(n=5, terminal=True):
         lp = dist.log_prob(act)
         done = (i == n - 1) and terminal
         transitions.append(Transition(obs, int(act), lp, value.squeeze(0),
-                                       reward=1.0 if done else -1.0, done=done))
+                                       reward=1.0 if done else -1.0, done=done,
+                                       entropy=dist.entropy()))
     return transitions, model
 
 
@@ -322,13 +323,13 @@ class TestA2C:
         assert not torch.allclose(before, after), \
             "Weights did not change after A2C update"
 
-    def test_empty_transitions_returns_zero_loss(self):
+    def test_empty_transitions_raises_error(self):
         model = RSNNv2(RSNNv2Config(hidden=8, timesteps=2))
         optimizer = torch.optim.Adam(model.parameters())
-        info = a2c_update(model, optimizer, [], last_value=0.0,
-                          gamma=0.99, gae_lambda=0.95,
-                          value_coef=0.5, entropy_coef=0.01, max_grad_norm=0.5)
-        assert info["total_loss"] == 0.0
+        with pytest.raises(ValueError, match="empty rollout"):
+            a2c_update(model, optimizer, [], last_value=0.0,
+                       gamma=0.99, gae_lambda=0.95,
+                       value_coef=0.5, entropy_coef=0.01, max_grad_norm=0.5)
 
     def test_advantage_normalisation_with_single_step(self):
         """Single-step episode should not crash on std=0 normalisation."""
@@ -516,7 +517,7 @@ class TestViZDoomIntegration:
             game.close()
 
     def test_one_training_episode_a2c(self):
-        from doom_env import build_game, collect_episode
+        from doom_env import build_game, collect_rollout
         from train_rsnn_v2 import a2c_update
         cfg = self._get_config()
         model = RSNNv2(RSNNv2Config(hidden=16, timesteps=4))
@@ -525,16 +526,15 @@ class TestViZDoomIntegration:
         try:
             game.new_episode()
             state = model.reset_state()
-            result, state = collect_episode(
+            segment = collect_rollout(
                 game, action_vectors, vzd, model, state,
-                frame_skip=4, max_decisions=10,
+                frame_skip=4, rollout_steps=10,
             )
             info = a2c_update(
-                model, optimizer, result.transitions,
+                model, optimizer, segment.transitions,
                 last_value=0.0, gamma=0.99, gae_lambda=0.95,
                 value_coef=0.5, entropy_coef=0.01, max_grad_norm=0.5,
             )
             assert math.isfinite(info["total_loss"])
-            assert info.get("decisions", result.decisions) == result.decisions
         finally:
             game.close()

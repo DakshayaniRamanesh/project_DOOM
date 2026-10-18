@@ -1,0 +1,1 @@
+policy,eval_mode,episode,seed,total_reward,kill,decisions,terminated,mean_spike_rate,mean_entropy,mean_margin,action_noop,action_left,action_right,action_shoot,action_left_shoot,action_right_shoot,frac_noop,frac_left,frac_right,frac_shoot,frac_left_shoot,frac_right_shoot,prob_noop,prob_left,prob_right,prob_shoot,prob_left_shoot,prob_right_shoot

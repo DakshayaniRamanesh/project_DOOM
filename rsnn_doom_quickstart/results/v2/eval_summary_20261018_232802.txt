@@ -1,0 +1,35 @@
+RSNN v2 Evaluation Summary — 20261018_232802
+Seeds: [5101, 5102]
+Episodes per seed: 5
+Evaluation modes: ['greedy', 'stochastic']
+Frame skip: 4
+==============================================================================
+  Policy           Mode        Kill %   Reward (mean±std)    Dec    Ent    Margin
+  --------------------------------------------------------------------------
+  random           greedy       80.0%    -82.4±179.7         32.6 1.792 0.000
+    Actions chosen:  noop:15%, left:16%, righ:17%, shoo:17%, left:17%, righ:18%
+    Network probs:   noop:17%, left:17%, righ:17%, shoo:17%, left:17%, righ:17%
+  always_shoot     greedy       80.0%     -6.0±202.0         16.6 0.000 1000000000.000
+    Actions chosen:  noop:0%, left:0%, righ:0%, shoo:100%, left:0%, righ:0%
+    Network probs:   noop:0%, left:0%, righ:0%, shoo:100%, left:0%, righ:0%
+  always_left_shoot greedy       80.0%     -6.0±202.0         16.6 0.000 1000000000.000
+    Actions chosen:  noop:0%, left:0%, righ:0%, shoo:0%, left:100%, righ:0%
+    Network probs:   noop:0%, left:0%, righ:0%, shoo:0%, left:100%, righ:0%
+  rsnn_v1          greedy       80.0%     14.0±162.0         16.6 1.538 0.048
+    Actions chosen:  noop:0%, left:86%, righ:0%, shoo:0%, left:14%, righ:0%
+    Network probs:   noop:1%, left:26%, righ:14%, shoo:5%, left:27%, righ:25%
+  rsnn_v1          stochastic   90.0%     19.5±138.5         14.8 1.524 0.038
+    Actions chosen:  noop:1%, left:29%, righ:11%, shoo:2%, left:30%, righ:26%
+    Network probs:   noop:1%, left:27%, righ:14%, shoo:5%, left:28%, righ:26%
+  rsnn_v2_best     greedy       90.0%     -3.1±136.9         18.2 1.735 0.090
+    Actions chosen:  noop:0%, left:7%, righ:0%, shoo:0%, left:42%, righ:51%
+    Network probs:   noop:16%, left:20%, righ:7%, shoo:14%, left:21%, righ:22%
+  rsnn_v2_best     stochastic   70.0%    -54.7±215.7         25.2 1.736 0.079
+    Actions chosen:  noop:20%, left:19%, righ:5%, shoo:8%, left:23%, righ:25%
+    Network probs:   noop:16%, left:20%, righ:7%, shoo:14%, left:20%, righ:22%
+  rsnn_v2_cmp      greedy        0.0%   -300.0±0.0           75.0 1.453 0.473
+    Actions chosen:  noop:100%, left:0%, righ:0%, shoo:0%, left:0%, righ:0%
+    Network probs:   noop:43%, left:6%, righ:2%, shoo:8%, left:14%, righ:27%
+  rsnn_v2_cmp      stochastic   80.0%    -33.4±184.2         23.2 1.472 0.396
+    Actions chosen:  noop:47%, left:5%, righ:2%, shoo:5%, left:16%, righ:25%
+    Network probs:   noop:41%, left:7%, righ:2%, shoo:8%, left:15%, righ:27%

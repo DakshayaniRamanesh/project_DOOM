@@ -91,6 +91,10 @@ class EpisodeResult:
     action_counts: dict
     transitions: list[Transition] = field(default_factory=list)
     truncated: bool = False
+    mean_probabilities: dict = field(default_factory=dict)
+    mean_entropy: float = 0.0
+    mean_margin: float = 0.0
+    decision_records: list = field(default_factory=list)
 
 
 @dataclass
@@ -170,17 +174,24 @@ def collect_rollout(game, action_vectors, vzd, model, state, *,
 
 def collect_episode_inference(game, action_vectors, vzd, model, state,
                               frame_skip: int = 4, max_decisions: int = 0,
-                              greedy: bool = True) -> Tuple[EpisodeResult, Tuple]:
+                              greedy: bool = True,
+                              record_decisions: bool = False) -> Tuple[EpisodeResult, Tuple]:
     """No-gradient inference. Optional policy.select_action(logits) overrides argmax.
 
     RandomPolicy implements select_action() to sample uniformly at evaluation;
-    learned policies keep greedy argmax unless greedy=False is requested.
+    learned policies use greedy argmax unless greedy=False (stochastic) is requested.
+    Also collects exact action probabilities, entropy and logit margins directly from network.
     """
     model.eval()
     counts = {n: 0 for n in ACTION_NAMES}
+    prob_sums = {n: 0.0 for n in ACTION_NAMES}
+    entropy_sum = 0.0
+    margin_sum = 0.0
     total_reward = 0.0
     spike_sum = 0.0
     decisions = 0
+    decision_records = []
+
     with torch.no_grad():
         while not game.is_episode_finished():
             gs = game.get_state()
@@ -188,26 +199,67 @@ def collect_episode_inference(game, action_vectors, vzd, model, state,
                 break
             obs = frame_to_tensor(gs.screen_buffer)
             logits, _, state, spike_rate = model(obs, state)
+            logits_1d = logits.squeeze(0)
+            probs = torch.softmax(logits_1d, dim=-1)
+            entropy = torch.distributions.Categorical(probs=probs).entropy().item()
+            sorted_logits, _ = torch.sort(logits_1d, descending=True)
+            margin = (sorted_logits[0] - sorted_logits[1]).item()
+
             if hasattr(model, "select_action"):
                 idx = int(model.select_action(logits))
             elif greedy:
-                idx = int(logits.squeeze(0).argmax().item())
+                idx = int(logits_1d.argmax().item())
             else:
-                idx = int(torch.distributions.Categorical(logits=logits.squeeze(0)).sample().item())
+                idx = int(torch.distributions.Categorical(probs=probs).sample().item())
+
             if not 0 <= idx < len(ACTION_NAMES):
                 raise ValueError(f"Policy returned invalid action index {idx}")
+
             reward = float(game.make_action(action_vectors[idx], frame_skip))
             total_reward += reward
             spike_sum += float(spike_rate)
             counts[ACTION_NAMES[idx]] += 1
+            for a_idx, a_name in enumerate(ACTION_NAMES):
+                prob_sums[a_name] += float(probs[a_idx].item())
+            entropy_sum += entropy
+            margin_sum += margin
             decisions += 1
+
+            if record_decisions:
+                decision_records.append({
+                    "decision": decisions,
+                    "action_idx": idx,
+                    "action_name": ACTION_NAMES[idx],
+                    "greedy": greedy,
+                    "entropy": round(entropy, 4),
+                    "margin": round(margin, 4),
+                    "spike_rate": round(float(spike_rate), 4),
+                    "reward": reward,
+                    **{f"logit_{n}": round(float(logits_1d[i].item()), 4) for i, n in enumerate(ACTION_NAMES)},
+                    **{f"prob_{n}": round(float(probs[i].item()), 4) for i, n in enumerate(ACTION_NAMES)},
+                })
+
             if max_decisions > 0 and decisions >= max_decisions:
                 break
+
     finished = bool(game.is_episode_finished())
     timeout = bool(game.is_episode_timeout_reached()) if finished else False
     kills = int(game.get_game_variable(vzd.GameVariable.KILLCOUNT))
-    result = EpisodeResult(total_reward, int(kills > 0), decisions,
-                           spike_sum / decisions if decisions else 0.0,
-                           finished and not timeout, counts,
-                           truncated=timeout or (max_decisions > 0 and decisions >= max_decisions and not finished))
+    mean_probs = {n: (prob_sums[n] / decisions) if decisions else (1.0 / len(ACTION_NAMES)) for n in ACTION_NAMES}
+    mean_entropy = (entropy_sum / decisions) if decisions else 0.0
+    mean_margin = (margin_sum / decisions) if decisions else 0.0
+
+    result = EpisodeResult(
+        reward=total_reward,
+        kill=int(kills > 0),
+        decisions=decisions,
+        mean_spike_rate=spike_sum / decisions if decisions else 0.0,
+        terminated=finished and not timeout,
+        action_counts=counts,
+        truncated=timeout or (max_decisions > 0 and decisions >= max_decisions and not finished),
+        mean_probabilities=mean_probs,
+        mean_entropy=round(mean_entropy, 5),
+        mean_margin=round(mean_margin, 5),
+        decision_records=decision_records,
+    )
     return result, state
