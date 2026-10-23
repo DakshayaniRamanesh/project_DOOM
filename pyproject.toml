@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "doomrsnn"
+version = "0.1.0"
+description = "Convolutional recurrent LIF policy for ViZDoom BASIC, imitation, DAgger and recurrent PPO"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26", "torch>=2.2", "Pillow>=10", "PyYAML>=6", "vizdoom>=1.2", "imageio>=2.31", "imageio-ffmpeg>=0.5"]
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+[tool.setuptools.packages.find]
+where = ["src"]

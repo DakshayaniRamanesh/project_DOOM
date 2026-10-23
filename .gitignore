@@ -1,0 +1,39 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+data/
+checkpoints/
+runs/
+*.mp4
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Training datasets and results
+data/
+datasets/
+runs/
+results/
+checkpoints/
+*.npz
+*.pt
+*.pth
+*.ckpt
+
+# Generated media
+*.mp4
+*.log
+
+# Credentials
+.env
+.env.*
+*.pem
+*.key
+
+# Local setup files
+get-pip.py

@@ -1,0 +1,10 @@
+numpy>=1.26
+torch>=2.2
+Pillow>=10
+PyYAML>=6
+vizdoom>=1.2
+imageio>=2.31
+imageio-ffmpeg>=0.5
+
+[dev]
+pytest>=8
