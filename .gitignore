@@ -29,24 +29,40 @@ MANIFEST
 # Virtual environments
 venv/
 .venv/
+.venv*/
 env/
 ENV/
 env.bak/
 venv.bak/
 
-# Embedded / external repository clone
+# ViZDoom runtime files and clone
 ViZDoom/
-
-# ViZDoom runtime generated files
 _vizdoom.ini
 
 # Testing & coverage
 .pytest_cache/
+.ruff_cache/
 .coverage
 .coverage.*
 htmlcov/
 .tox/
 .nox/
+
+# Training runs, datasets, and local checkpoints (ignore new top-level runs/data)
+data/
+datasets/
+runs/
+*.mp4
+*.log
+
+# Credentials & environment files
+.env
+.env.*
+*.pem
+*.key
+
+# Local setup files
+get-pip.py
 
 # IDE & editors
 .vscode/

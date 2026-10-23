@@ -1,0 +1,42 @@
+seed: 42
+device: auto
+scenario: null  # resolves to installed vizdoom scenarios/basic.cfg; or give absolute path
+visible: false
+action_repeat: 4
+episode_timeout: 300
+screen_width: 80
+screen_height: 60
+learning_rate: 0.0003
+weight_decay: 0.0
+max_grad_norm: 0.5
+checkpoint_dir: checkpoints
+output_dir: runs
+model:
+  in_channels: 3
+  height: 60
+  width: 80
+  conv_channels: [16, 32, 64]
+  pool_hw: [2, 3]
+  hidden_size: 128
+  timesteps: 8
+  beta: 0.5
+  threshold: 0.4
+  surrogate_slope: 5.0
+  actions: 6
+imitation:
+  sequence_length: 8
+  epochs: 30
+  demo_dir: data/demos
+  val_fraction: 0.15
+  validation_episodes: 10
+rl:
+  algorithm: ppo
+  episodes: 1000
+  rollout_steps: 8
+  gamma: 0.99
+  gae_lambda: 0.95
+  ppo_epochs: 3
+  clip_epsilon: 0.2
+  entropy_coefficient: 0.01
+  value_coefficient: 0.5
+  reward_scale: 0.01
