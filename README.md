@@ -4,7 +4,7 @@ An autonomous gameplay agent repository developed using **Spiking Neural Network
 
 The repository contains two complementary implementations:
 1. **`src/doomrsnn/` (New Modular LIF-RSNN Package)**: A clean, modular convolutional + recurrent Leaky Integrate-and-Fire (LIF) network with RGB input processing, object-label teacher demonstration collection, Behavioral Cloning (BC), DAgger, and sequence-correct PPO training workflows designed for high-performance cluster compute (Ampere).
-2. **`rsnn_doom_quickstart/` (Benchmark 96-Neuron RSNN)**: The foundational recurrent spiking neural network with grayscale image preprocessing, custom recurrent LIF layer, and Advantage Actor-Critic (A2C/GAE) training that achieved **81.3% kill success** on ViZDoom BASIC across 300 evaluation episodes.
+2. **`legacy/` (Benchmark 96-Neuron RSNN)**: The foundational recurrent spiking neural network with grayscale image preprocessing, custom recurrent LIF layer, and Advantage Actor-Critic (A2C/GAE) training that achieved **81.3% kill success** on ViZDoom BASIC across 300 evaluation episodes.
 
 ---
 
@@ -41,7 +41,7 @@ PROJECT-DOOM/
 |   |-- test_neurons_and_model.py
 |   `-- test_teacher_data.py
 |
-|-- rsnn_doom_quickstart/             # Benchmark 96-Neuron RSNN Implementation & Checkpoints
+|-- legacy/                           # Benchmark 96-Neuron RSNN Implementation & Checkpoints
 |   |-- rsnn_doom.py                  # Original REINFORCE RSNN implementation
 |   |-- rsnn_v2.py                    # Actor-critic 96-neuron recurrent spiking neural network
 |   |-- train_rsnn_v2.py              # A2C/GAE training loop with rollout buffer
@@ -131,7 +131,7 @@ python -m doomrsnn.cli --config configs/base.yaml record --checkpoint checkpoint
 
 ---
 
-## 3. Benchmark 96-Neuron RSNN (`rsnn_doom_quickstart`)
+## 3. Benchmark 96-Neuron RSNN (`legacy`)
 
 ### 3.1 Overview & Results
 The quickstart implementation demonstrates end-to-end perception-to-action using a 96-neuron recurrent spiking architecture. When trained with Advantage Actor-Critic (A2C/GAE) for 500 episodes on ViZDoom BASIC, the agent achieved:
@@ -175,7 +175,7 @@ flowchart TD
 ### 3.3 Quickstart Execution Commands
 
 ```bash
-cd rsnn_doom_quickstart
+cd legacy
 
 # Run unit tests
 python -m pytest tests/
